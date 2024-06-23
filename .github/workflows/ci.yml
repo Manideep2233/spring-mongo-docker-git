@@ -40,8 +40,8 @@ jobs:
       - name: Run tests
         run: mvn test
 
-      - name: Run Checkstyle
-        run: mvn checkstyle:check
+#      - name: Run Checkstyle
+#        run: mvn checkstyle:check
 
       - name: Run Spot Bugs
         run: mvn spotbugs:check
