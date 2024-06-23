@@ -1,40 +1,40 @@
-name: CI Pipeline
-
-on:
-  push:
-    branches:
-      - main
-      - 'feature/**'
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  env-setup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-          
-  test:
-    runs-on: ubuntu-latest
-    needs: env-setup
-    steps:
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Install dependencies
-        run: mvn install -DskipTests
+#name: CI Pipeline
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#      - 'feature/**'
+#  pull_request:
+#    branches:
+#      - main
+#
+#jobs:
+#  env-setup:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'adopt'
+#
+#  test:
+#    runs-on: ubuntu-latest
+#    needs: env-setup
+#    steps:
+#      - name: Cache Maven packages
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.m2
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-
+#      - name: Install dependencies
+#        run: mvn install -DskipTests
 
 #  build:
 #    runs-on: ubuntu-latest
@@ -94,21 +94,72 @@ jobs:
 ######################################################################################################################################################
 ########################################################################################################################
 ######################################################################################################################################################
+name: CI Pipeline
 
-#name: CI Pipeline
-#
-#on:
-#  push:
-#    branches:
-#      - main
-#      - 'feature/**'
-#  pull_request:
-#    branches:
-#      - main
-#
-#jobs:
-#  env-setup:
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  env-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Install dependencies
+        run: mvn install -DskipTests
+
+      - name: Upload .m2 directory
+        uses: actions/upload-artifact@v3
+        with:
+          name: maven-cache
+          path: ~/.m2
+
+  test:
+    runs-on: ubuntu-latest
+    needs: env-setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Download .m2 directory
+        uses: actions/download-artifact@v3
+        with:
+          name: maven-cache
+          path: ~/.m2
+
+      - name: Run tests
+        run: mvn test
+
+#  build:
 #    runs-on: ubuntu-latest
+#    needs: env-setup
 #    steps:
 #      - name: Checkout repository
 #        uses: actions/checkout@v3
@@ -119,65 +170,102 @@ jobs:
 #          java-version: '17'
 #          distribution: 'adopt'
 #
-#      - name: Cache Maven packages
-#        uses: actions/cache@v3
+#      - name: Download .m2 directory
+#        uses: actions/download-artifact@v3
 #        with:
+#          name: maven-cache
 #          path: ~/.m2
-#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: |
-#            ${{ runner.os }}-maven-
 #
-#      - name: Install dependencies
-#        run: mvn install -DskipTests
-#        working-directory: your/subdirectory/path
-#
-#  build:
-#    runs-on: ubuntu-latest
-#    needs: env-setup
-#    steps:
 #      - name: Build project
 #        run: mvn package
-#        working-directory: your/subdirectory/path
-#
-#  test:
-#    runs-on: ubuntu-latest
-#    needs: env-setup
-#    steps:
-#      - name: Run tests
-#        run: mvn test
-#        working-directory: your/subdirectory/path
 #
 #  checkstyle:
 #    runs-on: ubuntu-latest
 #    needs: env-setup
 #    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'adopt'
+#
+#      - name: Download .m2 directory
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: maven-cache
+#          path: ~/.m2
+#
 #      - name: Run Checkstyle
 #        run: mvn checkstyle:check
-#        working-directory: your/subdirectory/path
 #
 #  runSpotBugs:
 #    runs-on: ubuntu-latest
 #    needs: env-setup
 #    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'adopt'
+#
+#      - name: Download .m2 directory
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: maven-cache
+#          path: ~/.m2
+#
 #      - name: Run Spot Bugs
 #        run: mvn spotbugs:check
-#        working-directory: your/subdirectory/path
 #
 #  runPMD:
 #    runs-on: ubuntu-latest
 #    needs: env-setup
 #    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'adopt'
+#
+#      - name: Download .m2 directory
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: maven-cache
+#          path: ~/.m2
+#
 #      - name: Run PMD
 #        run: mvn pmd:check
-#        working-directory: your/subdirectory/path
 #
 #  uploadArtifact:
 #    runs-on: ubuntu-latest
-#    needs: env-setup
+#    needs: [env-setup, build]
 #    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'adopt'
+#
+#      - name: Download .m2 directory
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: maven-cache
+#          path: ~/.m2
+#
 #      - name: Upload artifact
 #        uses: actions/upload-artifact@v3
 #        with:
 #          name: build-artifact
-#          path: your/subdirectory/path/target/*.jar
-#
+#          path: target/*.jar
