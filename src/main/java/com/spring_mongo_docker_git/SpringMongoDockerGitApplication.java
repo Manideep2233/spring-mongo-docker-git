@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SpringMongoDockerGitApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SpringMongoDockerGitApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SpringMongoDockerGitApplication.class, args);
+    }
 
 }

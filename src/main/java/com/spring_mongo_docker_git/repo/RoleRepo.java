@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface RoleRepo extends MongoRepository<Role,String> {
+public interface RoleRepo extends MongoRepository<Role, String> {
     Optional<Role> findByRole(RoleEnum role);
 }

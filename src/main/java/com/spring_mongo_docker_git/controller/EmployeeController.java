@@ -1,22 +1,20 @@
 package com.spring_mongo_docker_git.controller;
 
+import com.spring_mongo_docker_git.entity.Employee;
 import com.spring_mongo_docker_git.entity.Role;
 import com.spring_mongo_docker_git.entity.RoleEnum;
 import com.spring_mongo_docker_git.repo.EmployeeRepo;
+import com.spring_mongo_docker_git.repo.RoleRepo;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import com.spring_mongo_docker_git.repo.RoleRepo;
-import com.spring_mongo_docker_git.entity.Employee;
 
 
 @RestController
@@ -30,19 +28,19 @@ public class EmployeeController {
     private EmployeeRepo employeeRepo;
 
 
-
     @PostConstruct
-    public void addRoleAndEmployee(){
-        if( roleRepo.findAll().isEmpty()){
+    public void addRoleAndEmployee() {
+        if (roleRepo.findAll().isEmpty()) {
             addRolesToDb();
         }
-        if( employeeRepo.findAll().isEmpty()){
+        if (employeeRepo.findAll().isEmpty()) {
             addEmployeesToDb();
         }
     }
-    public void addRolesToDb(){
 
-        RoleEnum[] roleNames = new RoleEnum[] { RoleEnum.USER, RoleEnum.ADMIN, RoleEnum.PRODUCER };
+    public void addRolesToDb() {
+
+        RoleEnum[] roleNames = new RoleEnum[]{RoleEnum.USER, RoleEnum.ADMIN, RoleEnum.PRODUCER};
         List<Role> list = Arrays.stream(roleNames).map(
                 roleEnum -> {
                     Role role = new Role();
@@ -54,7 +52,7 @@ public class EmployeeController {
         roleRepo.saveAll(list);
     }
 
-    public void addEmployeesToDb(){
+    public void addEmployeesToDb() {
 
         List<Employee> employeeList = new ArrayList<>();
         employeeList.add(Employee.builder()
@@ -82,47 +80,47 @@ public class EmployeeController {
     }
 
     @GetMapping("/getEmployees")
-    public List<Employee> getEmployees(){
+    public List<Employee> getEmployees() {
         return employeeRepo
                 .findAll()
                 .stream()
-                .peek(e-> System.out.println(e.toString()))
+                .peek(e -> System.out.println(e.toString()))
                 .toList();
     }
 
 
     @GetMapping("/welcome")
-    public String hello(){
+    public String hello() {
         return "Hello World";
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addEmployee(@RequestBody Employee employee){
+    public ResponseEntity<?> addEmployee(@RequestBody Employee employee) {
         Employee employee1 = employeeRepo.save(employee);
-        return new ResponseEntity<>("Employee saved with id: "+employee1.getEid(),
+        return new ResponseEntity<>("Employee saved with id: " + employee1.getEid(),
                 HttpStatus.CREATED);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateEmployee(@RequestBody Employee employee){
+    public ResponseEntity<?> updateEmployee(@RequestBody Employee employee) {
         Optional<Employee> emp = employeeRepo.findById(employee.getEid());
-        if(emp.isEmpty()){
-            return new ResponseEntity<>("Employee is not found in DB with id: "+employee.getEid(),
+        if (emp.isEmpty()) {
+            return new ResponseEntity<>("Employee is not found in DB with id: " + employee.getEid(),
                     HttpStatus.NO_CONTENT);
         }
         emp.get().setUsername(employee.getUsername());
         emp.get().setPassword(employee.getPassword());
         emp.get().setRoles(employee.getRoles());
         Employee employee1 = employeeRepo.save(employee);
-        return new ResponseEntity<>("Employee saved with id: "+employee1.getEid(),
+        return new ResponseEntity<>("Employee saved with id: " + employee1.getEid(),
                 HttpStatus.OK);
     }
 
     @GetMapping("/getByUsername/{username}")
-    public ResponseEntity<?> getByUsername(@PathVariable String username){
+    public ResponseEntity<?> getByUsername(@PathVariable String username) {
         Optional<Employee> emp = employeeRepo.findByUsername(username);
-        if(emp.isEmpty()){
-            return new ResponseEntity<>("Employee is not found in DB with username: "+username,
+        if (emp.isEmpty()) {
+            return new ResponseEntity<>("Employee is not found in DB with username: " + username,
                     HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(emp.get(),
@@ -130,8 +128,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAllEmployees(){
-
+    public ResponseEntity<?> getAllEmployees() {
         return new ResponseEntity<>(employeeRepo.findAll(),
                 HttpStatus.OK);
     }
